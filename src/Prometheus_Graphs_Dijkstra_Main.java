@@ -8,14 +8,16 @@ import java.util.Map;
 import java.util.Set;
 
 class Heap {
-	static class Value{
-		int a; 
+	static class Value {
+		int a;
 		int b;
-		Value(int a, int b){
+
+		Value(int a, int b) {
 			this.a = a;
 			this.b = b;
 		}
 	}
+
 	Value[] heap;
 	int size;
 
@@ -36,7 +38,6 @@ class Heap {
 		return i * 2 + 1;
 	}
 }
-
 
 class MinHeap extends Heap {
 	MinHeap(int n) {
@@ -126,27 +127,32 @@ class Graph {
 			System.out.println("IOExc " + e);
 		}
 	}
-	
-	void shortestPath(int start){
+
+	void shortestPath(int start) {
 		MinHeap heap = new MinHeap(n);
+		int[] A = new int[n + 1];
+		int[] B = new int[n + 1];
 		heap.heap[1] = new Heap.Value(0, start);
-		for (int i = 1; i<start; i++)
-			heap.heap[i+1] = new Heap.Value(Integer.MAX_VALUE, i);
-		for (int i = start + 1; i<=n;i++)
-			heap.heap[i] = new Heap.Value(Integer.MAX_VALUE, i);
-		int[] A = new int[n+1];
-		for (int i = 1; i < A.length; i++) {/////////////////exclude start
+		for (int i = 1; i < start; i++) {
+			heap.heap[i + 1] = new Heap.Value(Integer.MAX_VALUE, i);
 			A[i] = Integer.MAX_VALUE;
 		}
-		int[] B = new int[n+1];
-		while (heap.size > 0){
+		A[start] = 0;
+		for (int i = start + 1; i <= n; i++) {
+			heap.heap[i] = new Heap.Value(Integer.MAX_VALUE, i);
+			A[i] = Integer.MAX_VALUE;
+		}
+
+		while (heap.size > 0) {
 			Heap.Value next = heap.extractMin();
 			Map<Integer, Integer> nextMap = map.get(next.b);
-			for (Integer s : nextMap.keySet()){
-				
+			for (Integer s : nextMap.keySet()) {
+				if(A[s] > A[start]+nextMap.get(s)){
+					A[s] = A[start]+nextMap.get(s);
+					heap.decreaseKey(/*       s          */, A[s]);			////??????????????
+				}
 			}
-			
-			
+
 		}
 	}
 }
@@ -164,7 +170,7 @@ public class Prometheus_Graphs_Dijkstra_Main {
 			} catch (IOException e) {
 				System.out.println("IOExc " + e);
 			}
-			
+
 		}
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 	}
