@@ -7,11 +7,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 class Heap {
-	int[] heap;
+	class Value{
+		int a; 
+		int b;
+	}
+	Value[] heap;
 	int size;
 
 	Heap(int n) {
-		heap = new int[n + 2];
+		heap = new Value[n + 2];
 		size = 0;
 	}
 
