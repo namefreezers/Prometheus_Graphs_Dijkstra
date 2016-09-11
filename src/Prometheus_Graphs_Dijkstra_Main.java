@@ -6,116 +6,139 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+class Heap {
+	int[] heap;
+	int size;
+
+	Heap(int n) {
+		heap = new int[n + 2];
+		size = 0;
+	}
+
+	int par(int i) {
+		return i / 2;
+	}
+
+	int left(int i) {
+		return i * 2;
+	}
+
+	int right(int i) {
+		return i * 2 + 1;
+	}
+}
+
+
+class MinHeap extends Heap {
+	MinHeap(int n) {
+		super(n);
+	}
+
+	void minHeapify(int i) {
+		int p = left(i), q = right(i);
+		int min;
+		if (p <= size && heap[p] < heap[i])
+			min = p;
+		else
+			min = i;
+		if (q <= size && heap[q] < heap[min])
+			min = q;
+		if (min != i) {
+			int temp = heap[i];
+			heap[i] = heap[min];
+			heap[min] = temp;
+			minHeapify(min);
+		}
+	}
+
+	void insert(int key) {
+		size++;
+		heap[size] = Integer.MAX_VALUE;
+		decreaseKey(size, key);
+	}
+
+	void decreaseKey(int i, int key) {
+		heap[i] = key;
+		while (par(i) != 0 & heap[par(i)] > heap[i]) {
+			int temp = heap[par(i)];
+			heap[par(i)] = heap[i];
+			heap[i] = temp;
+			i = par(i);
+		}
+	}
+
+	int min() {
+		return heap[1];
+	}
+
+	int extractMin() {
+		int min = heap[1];
+		heap[1] = heap[size];
+		size--;
+		minHeapify(1);
+		return min;
+	}
+}
+
 class Graph {
-	HashMap<Integer, HashSet<Integer>> map;
+	HashMap<Integer, HashMap<Integer, Integer>> map;
+	int n, m;
 
 	Graph() {
 
 	}
 
 	Graph(String file) {
-		map = new HashMap<Integer, HashSet<Integer>>();
+		map = new HashMap<Integer, HashMap<Integer, Integer>>();
 		try (BufferedReader in = new BufferedReader(new FileReader(file))) {
+			String[] str = in.readLine().split(" ");
+			n = Integer.parseInt(str[0]);
+			m = Integer.parseInt(str[1]);
+			for (int i = 1; i <= n; i++)
+				map.put(i, new HashMap<Integer, Integer>());
 			while (in.ready()) {
-				String[] str = in.readLine().split(" ");
-				int first = Integer.parseInt(str[0]), second = Integer.parseInt(str[1]);
-				
-				HashSet<Integer> set = null;
-				if (!map.containsKey(first)) {
-					set = new HashSet<Integer>();
-					map.put(first, set);
-				} else {
-					set = map.get(first);
-				}
-				set.add(second);
-				
-				if (!map.containsKey(second))
-					map.put(second, new HashSet<Integer>());
-			}
+				str = in.readLine().split(" ");
+				int first = Integer.parseInt(str[0]), second = Integer.parseInt(str[1]),
+						third = Integer.parseInt(str[2]);
 
+				HashMap<Integer, Integer> innerMap = map.get(first), innerMap2 = map.get(second);
+
+				if (!innerMap.containsKey(second)) {
+					innerMap.put(second, third);
+					innerMap2.put(first, third);
+				} else {
+					if (innerMap.get(second) > third) {
+						innerMap.replace(second, third);
+						innerMap2.replace(first, third);
+					}
+				}
+			}
 		} catch (IOException e) {
 			System.out.println("IOExc " + e);
 		}
 	}
 	
-	
-
-	Graph reverse() {
-		Graph res = new Graph();
-		res.map = new HashMap<Integer, HashSet<Integer>>();
-
-		for (Integer i : map.keySet())
-			for (Integer j : map.get(i)) {
-				if (!res.map.containsKey(j))
-					res.map.put(j, new HashSet<Integer>());
-				if (!res.map.containsKey(i))
-					res.map.put(i, new HashSet<Integer>());
-				res.map.get(j).add(i);
-			}
-		return res;
-	}
-
-	ArrayList<Set<Integer>> StronglyConnected() {
-		ArrayList<Integer> fin = new ArrayList<Integer>();
-		DFSLoop(fin);
-		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
-
-		Graph g2 = reverse();
-		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
-
-		ArrayList<Set<Integer>> res = g2.DFSLoop2(fin);
-		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
-		return res;
-	}
-
-	void DFSLoop(ArrayList<Integer> fin) {
-		Set<Integer> researched = new HashSet<Integer>();
-		int t = -1;
-		for (Integer i : map.keySet())
-			if (!researched.contains(i))
-				t = DFSRUtilCon(i, researched, t, fin);
-
-	}
-
-	int DFSRUtilCon(int start, Set<Integer> researched, int t, ArrayList<Integer> fin) {
-		researched.add(start);
-		for (Integer i : map.get(start))
-			if (!researched.contains(i))
-				t = DFSRUtilCon(i, researched, t, fin);
-		t = t + 1;
-		fin.add(t, start);
-		return t;
-	}
-
-	ArrayList<Set<Integer>> DFSLoop2(ArrayList<Integer> fin) {
-		Set<Integer> researched = new HashSet<Integer>();
-		ArrayList<Set<Integer>> listConnected = new ArrayList<>();
-		for (int i = fin.size() - 1; i >= 0; i--)
-			if (!researched.contains(fin.get(i))) {
-				Set<Integer> setConnected = new HashSet<Integer>();
-				DFSRUtilCon2(fin.get(i), researched, setConnected, fin);
-				listConnected.add(setConnected);
-			}
-		return listConnected;
-
-	}
-
-	void DFSRUtilCon2(int start, Set<Integer> researched, Set<Integer> setConnected, ArrayList<Integer> fin) {
-		researched.add(start);
-		setConnected.add(start);
-		Set<Integer> startSet = map.get(start);
-		for (int i : startSet)
-			if (!researched.contains(i))
-				DFSRUtilCon2(i, researched, setConnected, fin);
+	void shortestPath(int start){
+		
 	}
 }
-
 
 public class Prometheus_Graphs_Dijkstra_Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+		String[] files = { "test_09/input_1_100.txt", "test_09/input_2_100.txt", "test_09/input_3_100.txt",
+				"test_09/input_4_1000.txt", "test_09/input_5_10.txt", "test_09/input_6_10.txt",
+				"test_09/input_7_10.txt", "test_09/input_8_10.txt", "test_09/USA-FLA.txt" };
+		for (String s : files) {
+			System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+			try (BufferedReader in = new BufferedReader(new FileReader(s))) {
+				Graph g = new Graph(s);
+			} catch (IOException e) {
+				System.out.println("IOExc " + e);
+			}
+			
+		}
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 	}
 
 }
