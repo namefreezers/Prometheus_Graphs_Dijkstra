@@ -10,6 +10,10 @@ class Heap {
 	class Value{
 		int a; 
 		int b;
+		Value(int a, int b){
+			this.a = a;
+			this.b = b;
+		}
 	}
 	Value[] heap;
 	int size;
@@ -41,42 +45,42 @@ class MinHeap extends Heap {
 	void minHeapify(int i) {
 		int p = left(i), q = right(i);
 		int min;
-		if (p <= size && heap[p] < heap[i])
+		if (p <= size && heap[p].a < heap[i].a)
 			min = p;
 		else
 			min = i;
-		if (q <= size && heap[q] < heap[min])
+		if (q <= size && heap[q].a < heap[min].a)
 			min = q;
 		if (min != i) {
-			int temp = heap[i];
+			Value temp = heap[i];
 			heap[i] = heap[min];
 			heap[min] = temp;
 			minHeapify(min);
 		}
 	}
 
-	void insert(int key) {
+	void insert(int key, int value) {
 		size++;
-		heap[size] = Integer.MAX_VALUE;
+		heap[size] = new Value(key, Integer.MAX_VALUE);
 		decreaseKey(size, key);
 	}
 
 	void decreaseKey(int i, int key) {
-		heap[i] = key;
-		while (par(i) != 0 & heap[par(i)] > heap[i]) {
-			int temp = heap[par(i)];
+		heap[i].a = key;
+		while (par(i) != 0 & heap[par(i)].a > heap[i].a) {
+			Value temp = heap[par(i)];
 			heap[par(i)] = heap[i];
 			heap[i] = temp;
 			i = par(i);
 		}
 	}
 
-	int min() {
+	Value min() {
 		return heap[1];
 	}
 
-	int extractMin() {
-		int min = heap[1];
+	Value extractMin() {
+		Value min = heap[1];
 		heap[1] = heap[size];
 		size--;
 		minHeapify(1);
