@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 class Heap {
-	class Value{
+	static class Value{
 		int a; 
 		int b;
 		Value(int a, int b){
@@ -127,7 +128,26 @@ class Graph {
 	}
 	
 	void shortestPath(int start){
-		
+		MinHeap heap = new MinHeap(n);
+		heap.heap[1] = new Heap.Value(0, start);
+		for (int i = 1; i<start; i++)
+			heap.heap[i+1] = new Heap.Value(Integer.MAX_VALUE, i);
+		for (int i = start + 1; i<=n;i++)
+			heap.heap[i] = new Heap.Value(Integer.MAX_VALUE, i);
+		int[] A = new int[n+1];
+		for (int i = 1; i < A.length; i++) {/////////////////exclude start
+			A[i] = Integer.MAX_VALUE;
+		}
+		int[] B = new int[n+1];
+		while (heap.size > 0){
+			Heap.Value next = heap.extractMin();
+			Map<Integer, Integer> nextMap = map.get(next.b);
+			for (Integer s : nextMap.keySet()){
+				
+			}
+			
+			
+		}
 	}
 }
 
