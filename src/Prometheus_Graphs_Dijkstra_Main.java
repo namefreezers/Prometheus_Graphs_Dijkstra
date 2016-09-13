@@ -166,9 +166,12 @@ class Graph {
 		heap.size = n;
 		boolean[] researched = new boolean[n + 1];
 		while (heap.size > 0) {
+			if (heap.size == 89)
+				System.out.println();
 			Heap.Value next = heap.extractMin();
 			researched[next.top] = true;
 			Map<Integer, Integer> nextMap = map.get(next.top);
+			start = next.top;
 			for (Integer s : nextMap.keySet()) {
 				if (!researched[s])
 					if (A[s] > A[start] + nextMap.get(s)) {
