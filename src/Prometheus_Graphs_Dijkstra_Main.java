@@ -1,20 +1,17 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 class Heap {
 	static class Value {
-		int a;
-		int b;
+		int key;
+		int top;
 
-		Value(int a, int b) {
-			this.a = a;
-			this.b = b;
+		Value(int key, int top) {
+			this.key = key;
+			this.top = top;
 		}
 	}
 
@@ -40,6 +37,9 @@ class Heap {
 }
 
 class MinHeap extends Heap {
+
+	HashMap<Integer, Integer> indexHeap = new HashMap<>();
+
 	MinHeap(int n) {
 		super(n);
 	}
@@ -47,15 +47,17 @@ class MinHeap extends Heap {
 	void minHeapify(int i) {
 		int p = left(i), q = right(i);
 		int min;
-		if (p <= size && heap[p].a < heap[i].a)
+		if (p <= size && heap[p].key < heap[i].key)
 			min = p;
 		else
 			min = i;
-		if (q <= size && heap[q].a < heap[min].a)
+		if (q <= size && heap[q].key < heap[min].key)
 			min = q;
 		if (min != i) {
 			Value temp = heap[i];
+			indexHeap.replace(temp.top, min);
 			heap[i] = heap[min];
+			indexHeap.replace(heap[i].top, i);
 			heap[min] = temp;
 			minHeapify(min);
 		}
@@ -67,14 +69,28 @@ class MinHeap extends Heap {
 		decreaseKey(size, key);
 	}
 
-	void decreaseKey(int i, int key) {
-		heap[i].a = key;
-		while (par(i) != 0 & heap[par(i)].a > heap[i].a) {
+	void decreaseTop(int top, int key) {
+		int ind = indexHeap.get(top);
+		heap[ind].key = key;
+		while (par(ind) != 0 && heap[par(ind)].key > heap[ind].key) {
+			Value temp = heap[par(ind)];
+			heap[par(ind)] = heap[ind];
+			heap[ind] = temp;
+			indexHeap.replace(temp.key, ind);
+			ind = par(ind);
+		}
+		indexHeap.replace(top, ind);
+	}
+
+	int decreaseKey(int i, int key) {
+		heap[i].key = key;
+		while (par(i) != 0 & heap[par(i)].key > heap[i].key) {
 			Value temp = heap[par(i)];
 			heap[par(i)] = heap[i];
 			heap[i] = temp;
 			i = par(i);
 		}
+		return i;
 	}
 
 	Value min() {
@@ -83,7 +99,9 @@ class MinHeap extends Heap {
 
 	Value extractMin() {
 		Value min = heap[1];
+		indexHeap.remove(min.top);
 		heap[1] = heap[size];
+		indexHeap.replace(heap[1].top, 1);
 		size--;
 		minHeapify(1);
 		return min;
@@ -128,28 +146,32 @@ class Graph {
 		}
 	}
 
-	void shortestPath(int start) {
+	void shortestPath(int start, int[] A, int[] B) {
 		MinHeap heap = new MinHeap(n);
-		int[] A = new int[n + 1];
-		int[] B = new int[n + 1];
+		//int[] A = new int[n + 1];
+		//int[] B = new int[n + 1];
 		heap.heap[1] = new Heap.Value(0, start);
+		A[start] = 0;
+		heap.indexHeap.put(start, 1);
 		for (int i = 1; i < start; i++) {
 			heap.heap[i + 1] = new Heap.Value(Integer.MAX_VALUE, i);
 			A[i] = Integer.MAX_VALUE;
+			heap.indexHeap.put(i, i + 1);
 		}
-		A[start] = 0;
 		for (int i = start + 1; i <= n; i++) {
 			heap.heap[i] = new Heap.Value(Integer.MAX_VALUE, i);
 			A[i] = Integer.MAX_VALUE;
+			heap.indexHeap.put(i, i);
 		}
-
+		heap.size = n;
 		while (heap.size > 0) {
 			Heap.Value next = heap.extractMin();
-			Map<Integer, Integer> nextMap = map.get(next.b);
+			Map<Integer, Integer> nextMap = map.get(next.top);
 			for (Integer s : nextMap.keySet()) {
-				if(A[s] > A[start]+nextMap.get(s)){
-					A[s] = A[start]+nextMap.get(s);
-					heap.decreaseKey(/*       s          */, A[s]);			////??????????????
+				if (A[s] > A[start] + nextMap.get(s)) {
+					A[s] = A[start] + nextMap.get(s);
+					B[s] = start;
+					heap.decreaseTop(s, A[s]);
 				}
 			}
 
@@ -160,6 +182,8 @@ class Graph {
 public class Prometheus_Graphs_Dijkstra_Main {
 
 	public static void main(String[] args) {
+		/*
+		
 		String[] files = { "test_09/input_1_100.txt", "test_09/input_2_100.txt", "test_09/input_3_100.txt",
 				"test_09/input_4_1000.txt", "test_09/input_5_10.txt", "test_09/input_6_10.txt",
 				"test_09/input_7_10.txt", "test_09/input_8_10.txt", "test_09/USA-FLA.txt" };
@@ -172,6 +196,12 @@ public class Prometheus_Graphs_Dijkstra_Main {
 			}
 
 		}
+*/
+		Graph g = new Graph("test_09/input_1_100.txt");
+		int[] A = new int[g.n +1], B = new int[g.n +1];
+		g.shortestPath(1, A, B);
+		for (int i : A)
+			System.out.println(i);
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 	}
 
