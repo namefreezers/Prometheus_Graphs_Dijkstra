@@ -76,7 +76,7 @@ class MinHeap extends Heap {
 			Value temp = heap[par(ind)];
 			heap[par(ind)] = heap[ind];
 			heap[ind] = temp;
-			indexHeap.replace(temp.key, ind);
+			indexHeap.replace(temp.top, ind);						////////////////////////////////////
 			ind = par(ind);
 		}
 		indexHeap.replace(top, ind);
@@ -166,8 +166,6 @@ class Graph {
 		heap.size = n;
 		boolean[] researched = new boolean[n + 1];
 		while (heap.size > 0) {
-			if (heap.size == 89)
-				System.out.println();
 			Heap.Value next = heap.extractMin();
 			researched[next.top] = true;
 			Map<Integer, Integer> nextMap = map.get(next.top);
@@ -202,12 +200,16 @@ public class Prometheus_Graphs_Dijkstra_Main {
 		 * 
 		 * }
 		 */
-		Graph g = new Graph("test_09/input_1_100.txt");
+		Graph g = new Graph("test_09/input_5_10.txt");
 		int[] A = new int[g.n + 1], B = new int[g.n + 1];
 		g.shortestPath(1, A, B);
 		for (int i : A)
 			System.out.println(i);
-		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+		
+		
+		
+		
+		//System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 	}
 
 }
