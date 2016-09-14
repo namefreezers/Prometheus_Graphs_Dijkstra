@@ -197,7 +197,7 @@ public class Prometheus_Graphs_Dijkstra_Main {
 
 	static int differentPaths(int start, Map<Integer, Set<Integer>> map) {
 		Set<Integer> set = map.get(start);
-		if (set.isEmpty())
+		if (set == null || set.isEmpty())
 			return 1;
 		int i = 0;
 		for (Integer j : set)
