@@ -177,13 +177,14 @@ class Graph {
 					else if (A[s] > A[start] + nextMap.get(s)) {
 						A[s] = A[start] + nextMap.get(s);
 
-						Set<Integer> set = B.get(s);
-						set.clear();
-						set.add(start);
 						/*
-						 * HashSet<Integer> set = new HashSet<>();
-						 * set.add(start); B.put(s, set);
+						 * Set<Integer> set = B.get(s); set.clear();
+						 * set.add(start);
 						 */
+						HashSet<Integer> set = new HashSet<>();
+						set.add(start);
+						B.put(s, set);
+
 						heap.decreaseTop(s, A[s]);
 					}
 			}
@@ -224,9 +225,6 @@ public class Prometheus_Graphs_Dijkstra_Main {
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		int[] A = new int[g.n + 1];
 		HashMap<Integer, Set<Integer>> B = new HashMap<>();
-		for (int i = 1; i <= g.n; i++)
-			B.put(i, new HashSet<Integer>());
-		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		g.shortestPath(100562, A, B);
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		System.out.println(A[1070345]);
