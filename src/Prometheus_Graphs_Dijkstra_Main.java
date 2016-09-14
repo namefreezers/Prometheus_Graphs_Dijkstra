@@ -129,15 +129,13 @@ class Graph {
 				int first = Integer.parseInt(str[0]), second = Integer.parseInt(str[1]),
 						third = Integer.parseInt(str[2]);
 
-				HashMap<Integer, Integer> innerMap = map.get(first), innerMap2 = map.get(second);
+				HashMap<Integer, Integer> innerMap = map.get(first);
 
 				if (!innerMap.containsKey(second)) {
 					innerMap.put(second, third);
-					innerMap2.put(first, third);
 				} else {
 					if (innerMap.get(second) > third) {
 						innerMap.replace(second, third);
-						innerMap2.replace(first, third);
 					}
 				}
 			}
@@ -200,11 +198,15 @@ public class Prometheus_Graphs_Dijkstra_Main {
 		 * 
 		 * }
 		 */
-		Graph g = new Graph("test_09/input_5_10.txt");
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+		Graph g = new Graph("test_09/USA-FLA.txt");
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		int[] A = new int[g.n + 1], B = new int[g.n + 1];
-		g.shortestPath(1, A, B);
-		for (int i : A)
-			System.out.println(i);
+		g.shortestPath(100562, A, B);
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+		System.out.println(A[1070345]);
+		//for (int i : A)
+		//	System.out.println(i);
 		
 		
 		
