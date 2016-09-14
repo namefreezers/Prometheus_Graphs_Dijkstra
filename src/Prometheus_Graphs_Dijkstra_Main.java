@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class Heap {
 	static class Value {
@@ -76,7 +78,7 @@ class MinHeap extends Heap {
 			Value temp = heap[par(ind)];
 			heap[par(ind)] = heap[ind];
 			heap[ind] = temp;
-			indexHeap.replace(temp.top, ind);						////////////////////////////////////
+			indexHeap.replace(temp.top, ind); ////////////////////////////////////
 			ind = par(ind);
 		}
 		indexHeap.replace(top, ind);
@@ -144,7 +146,7 @@ class Graph {
 		}
 	}
 
-	void shortestPath(int start, int[] A, int[] B) {
+	void shortestPath(int start, int[] A, Map<Integer, Set<Integer>> B) {
 		MinHeap heap = new MinHeap(n);
 		// int[] A = new int[n + 1];
 		// int[] B = new int[n + 1];
@@ -170,9 +172,18 @@ class Graph {
 			start = next.top;
 			for (Integer s : nextMap.keySet()) {
 				if (!researched[s])
-					if (A[s] > A[start] + nextMap.get(s)) {
+					if (A[s] == A[start] + nextMap.get(s))
+						B.get(s).add(start);
+					else if (A[s] > A[start] + nextMap.get(s)) {
 						A[s] = A[start] + nextMap.get(s);
-						B[s] = start;
+
+						Set<Integer> set = B.get(s);
+						set.clear();
+						set.add(start);
+						/*
+						 * HashSet<Integer> set = new HashSet<>();
+						 * set.add(start); B.put(s, set);
+						 */
 						heap.decreaseTop(s, A[s]);
 					}
 			}
@@ -182,6 +193,16 @@ class Graph {
 }
 
 public class Prometheus_Graphs_Dijkstra_Main {
+
+	static int differentPaths(int start, Map<Integer, Set<Integer>> map) {
+		Set<Integer> set = map.get(start);
+		if (set.isEmpty())
+			return 1;
+		int i = 0;
+		for (Integer j : set)
+			i += differentPaths(j, map);
+		return i;
+	}
 
 	public static void main(String[] args) {
 		/*
@@ -201,17 +222,21 @@ public class Prometheus_Graphs_Dijkstra_Main {
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		Graph g = new Graph("test_09/USA-FLA.txt");
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
-		int[] A = new int[g.n + 1], B = new int[g.n + 1];
+		int[] A = new int[g.n + 1];
+		HashMap<Integer, Set<Integer>> B = new HashMap<>();
+		for (int i = 1; i <= g.n; i++)
+			B.put(i, new HashSet<Integer>());
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		g.shortestPath(100562, A, B);
 		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
 		System.out.println(A[1070345]);
-		//for (int i : A)
-		//	System.out.println(i);
-		
-		
-		
-		
-		//System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+		System.out.println(differentPaths(1070345, B));
+		System.out.println(new java.sql.Timestamp(new java.util.Date().getTime()));
+		// for (int i : A)
+		// System.out.println(i);
+
+		// System.out.println(new java.sql.Timestamp(new
+		// java.util.Date().getTime()));
 	}
 
 }
